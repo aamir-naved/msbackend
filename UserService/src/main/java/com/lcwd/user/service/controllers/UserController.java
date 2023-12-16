@@ -3,6 +3,8 @@ package com.lcwd.user.service.controllers;
 import com.lcwd.user.service.entities.User;
 import com.lcwd.user.service.services.UserService;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
+import io.github.resilience4j.retry.annotation.Retry;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,6 +28,8 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    int retryCount = 1;
+
 
     //create
     @PostMapping
@@ -45,8 +49,13 @@ public class UserController {
 // this api is calling hotel service and rating service
     // here we will implement circuit breaker
     @GetMapping("/{userId}")
-    @CircuitBreaker(name = "ratingHotelBreaker", fallbackMethod = "ratingHotelFallback")
+  //  @CircuitBreaker(name = "ratingHotelBreaker", fallbackMethod = "ratingHotelFallback")
+   // @Retry(name = "retryRatingHotelService", fallbackMethod = "ratingHotelFallback")
+    @RateLimiter(name = "userRateLimiter", fallbackMethod = "ratingHotelFallback")
     public ResponseEntity<User> getSingleUser(@PathVariable String userId){
+        // retry hone pe main method run karta naa ki fallback method
+        logger.info("Retry count: {}", retryCount);
+        retryCount++;
         User fetchedUser = userService.getUser(userId);
         return ResponseEntity.ok(fetchedUser);
     }
@@ -56,6 +65,7 @@ public class UserController {
     //creating fallback method for circuit breaker
     // method definition should be same as the method for which this method will
     // behave as fallback method and then at the end or parameter take Exception type too
+
     public ResponseEntity<User> ratingHotelFallback(String userId, Exception ex){
 
         logger.info("Fallback is executed because service is down.", ex.getMessage());

@@ -31,3 +31,12 @@ spring:
 #    register-with-eureka: true
 #    service-url:
 #      defaultZone: http://localhost:8761/eureka
+
+
+okta:
+  oauth2:
+    issuer: https://dev-88464346.okta.com/oauth2/default
+    audience: api://default
+    client-id: 0oadxnpkiiUUD9xMn5d7
+    client-secret: tAkQ8DDT49dQvzJIAjVYbv8l_REL0LOtG0L4kM6_qp4wxaxiWNpuNKP8_qXxFh_G
+    scopes: openid, profile, email, offline_access
