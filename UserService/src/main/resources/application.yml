@@ -1,0 +1,94 @@
+server:
+  port: 8081
+
+
+#spring:
+#  datasource:
+#    url: jdbc:mysql://localhost:3306/microservices
+#    username: aamir
+#    password: 1234
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#  jpa:
+#    hibernate:
+#      ddl-auto: update
+#    show-sql: true
+#    properties:
+#      dialect: org.hibernate.dialect.MySQL8Dialect
+#  application:
+#    name: USER-SERVICE
+
+
+#  spring.datasource.url=jdbc:h2:file:D:/mylocaldb/microservice/user_service_db
+#  spring.datasource.driverClassName=org.h2.Driver
+#  spring.jpa.hibernate.ddl-auto=update
+
+#spring:
+#  h2:
+#    console:
+#      enabled: true
+#  jpa:
+#    hibernate:
+#      ddl-auto: update
+#    show-sql: true
+#  application:
+#    name: USER-SERVICE
+
+spring:
+  application:
+    name: USER-SERVICE
+  datasource:
+    url: jdbc:h2:file:/Users/aamirnaved/MyLocalDB/microservice/user_service_db
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+# config server se configurations import karne ke liye, 8085 pe config server up and running hona chahiye
+  config:
+    import: configserver:http://localhost:8085
+#  profiles:
+#    active: prod
+
+
+#eureka:
+#  instances:
+#    prefer-ip-address: true
+#  client:
+#    fetch-registry: true
+#    register-with-eureka: true
+#    service-url:
+#      defaultZone: http://localhost:8761/eureka
+
+
+
+# configurations for actuator
+
+management:
+  health:
+    circuitbreakers:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: always
+
+
+
+#
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      ratingHotelBreaker:
+        registerHealthIndicator: true
+        eventConsumerBufferSize: 10
+        failureRateThreshold: 50
+        minimumNumberOfCalls: 5
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+        waitDurationInOpenState: 6s
+        permittedNumberOfCallsInHalfOpenState: 3
+        slidingWindowSize: 10
+        slidingWindowType: COUNT_BASED

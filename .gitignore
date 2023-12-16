@@ -1,0 +1,5 @@
+# Project exclude paths
+/HotelService/target/
+/RatingService/target/
+/ServiceRegistry/target/
+/UserService/target/
