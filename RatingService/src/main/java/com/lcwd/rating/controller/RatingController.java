@@ -6,6 +6,7 @@ import com.lcwd.rating.services.RatingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -22,10 +23,13 @@ public class RatingController {
    private RateLimiter rateLimiter;
 
 
+    @PreAuthorize("hasAuthority('Admin')")
     @PostMapping
     public ResponseEntity<Rating> create(@RequestBody Rating rating){
         return ResponseEntity.status(HttpStatus.CREATED).body(ratingService.createRating(rating));
     }
+
+
 
     @GetMapping
     public ResponseEntity<List<Rating>> getRatings(){
@@ -41,6 +45,7 @@ public class RatingController {
 
 
     //some changes to implement rate limiter
+    @PreAuthorize("hasAuthority('SCOPE_internal') || hasAuthority('Admin')")
     @GetMapping("/users/{userId}")
     public ResponseEntity<List<Rating>> getRatingsByUserId(@PathVariable String userId){
 
